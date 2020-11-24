@@ -1,0 +1,6 @@
+*.pyc
+.DS_Store
+data/
+fig*
+notebook
+slc_figures/

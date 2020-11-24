@@ -4,7 +4,7 @@ import pyathena as pa
 units=pa.set_units(muH=1.4271)
 import gravity
 
-class data_container(object):
+class DataContainer(object):
     """Basic data container
     """
     def __init__(self,pid,base='../data/'):
@@ -51,6 +51,21 @@ class data_container(object):
 
     def load_zprof(self):
         """read in z-profiles
+
+        Return
+        ======
+        tot : xarray.Dataset
+            dataset containing all phases from original zprof
+        icm : xarray.Dataset
+            for icm only
+        ism : xarray.Dataset
+            for ism only
+
+        Note
+        ====
+        <q> = int q*Theta*f dx dy
+        where Theat is a phase selector
+        and f is 1 for tot, f_icm for icm, and f_ism for ism
         """
         print('Merging zprof phases...')
         zpall = self.files['zpall']
@@ -108,6 +123,7 @@ class data_container(object):
         self.to_flux=(units['density']*units['velocity']).to('Msun/(kpc^2*yr)').value
         self.to_Eflux=(units['density']*units['velocity']**3).to('erg/(kpc^2*yr)').value
         self.to_gacc=((units['pressure']/units['length'])/units['density']).cgs.value
+        self.to_Msun=units['mass'].to('Msun').value
 
     def _redefine_phase(self,data_orig):
         """rename phase
@@ -153,7 +169,7 @@ class data_container(object):
         plt.plot(g.z,g.gz_dm(g.z),label='DM')
 
 class allmodels(object):
-    """Load all data containers
+    """Load all models to data container
     """
     def __init__(self,models):
         self.models=models
@@ -162,7 +178,7 @@ class allmodels(object):
     def load_sims(self):
         self.dc = dict()
         for m in self.models:
-            dc = data_container(self.models[m])
+            dc = DataContainer(self.models[m])
             dc.calc_icm_params()
             tot,icm,ism=dc.load_zprof()
             dc.tot = tot
@@ -215,11 +231,11 @@ class allmodels(object):
             zp['metalflux_sn']=(zp['pFzs2']+zp['mFzs2']+zp['pFzs3']+zp['mFzs3'])
             zp['vB'] = np.sqrt(2.0*zp['energyflux']/zp['massflux'])
 
-class viz_container(data_container):
+class VizDataContainer(DataContainer):
     """Data container for visualization
     """
     def __init__(self, pid, base='../data/'):
-        data_container.__init__(self,pid,base)
+        DataContainer.__init__(self,pid,base)
 
         self.slcfiles = glob.glob('{}{}/slice/{}.*.p'.format(base,pid,pid))
         self.prjfiles = glob.glob('{}{}/surf/{}.*.surf.p'.format(base,pid,pid))
