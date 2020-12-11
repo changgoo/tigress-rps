@@ -124,6 +124,7 @@ class DataContainer(object):
         self.to_Eflux=(units['density']*units['velocity']**3).to('erg/(kpc^2*yr)').value
         self.to_gacc=((units['pressure']/units['length'])/units['density']).cgs.value
         self.to_Msun=units['mass'].to('Msun').value
+        self.to_erg=(units['pressure']*units['length']**3).to('erg').value
 
     def _redefine_phase(self,data_orig):
         """rename phase

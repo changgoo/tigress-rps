@@ -347,21 +347,22 @@ units = {
         'momflux': r'[k_B\,{\rm cm^{-3}\,K}]',
         'energyflux': r'[{\rm 10^{51} erg\,kpc^{-2}\,yr^{-1}}]',
         }
-labels = {'nH':r'$n_H$',
-          'temperature':r'$T$',
+labels = {'nH':r'$n_H/{\rm cm^{-3}}$',
+          'temperature':r'$T/{\rm K}$',
           'Z':r'$Z/Z_\odot$',
           'velocity_z':r'$v_z/({\rm km/s})$',
           'specific_scalar3':r'$s_{\rm ICM}$',
-          'pok':r'$P/k_B$',
-          'ram_pok_z':r'$\rho v_z^2/k_B$',
-          'mag_pok':r'$P_B/k_B$',
+          'pok':r'$\frac{P/k_B}{{\rm cm^{-3}K}}$',
+          'ram_pok_z':r'$\frac{\rho v_z^2/k_B}{{\rm cm^{-3}K}}$',
+          'mag_pok':r'$\frac{P_B/k_B}{{\rm cm^{-3}K}}$',
           'magnetic_field_strength':r'$B/\mu{\rm G}$',
           'beta':r'$\beta$',
           'betainv':r'$\beta^{-1}$',
          }
 
 def plot_slices(slc,cutax='x'):
-    fields = ['nH','temperature','velocity_z','Z','specific_scalar3','ram_pok_z','pok','magnetic_field_strength']
+    fields = ['nH','temperature','velocity_z','Z','specific_scalar3',
+              'ram_pok_z','pok','mag_pok']
     nologs = ['specific_scalar0','Z','velocity_z','beta']
     whites = []#'nH','temperature','velocity_z','Z','specific_scalar3','magnetic_field_strength']
 
@@ -403,6 +404,7 @@ def plot_slices(slc,cutax='x'):
 #                          bbox_transform=ax.transAxes)
         cbar = plt.colorbar(cax=cax,orientation='horizontal')
         cbar.minorticks_off()
+        cbar.ax.xaxis.set_label_position('top')
         if f == 'Z':
             cbar.set_ticks(ticker.FixedLocator([1/3,1,3]))
             cbar.ax.set_xticklabels(['1/3', '1', '3'])
@@ -418,13 +420,13 @@ def plot_slices(slc,cutax='x'):
             cbar.set_ticks([-1.e3,-1e2,1e2,1.e3])
         elif f == 'magnetic_field_strength':
             cbar.set_ticks(ticker.FixedLocator([-2,-1,0,1,2]))
+
         if f in labels:
             label = labels[f]
             if not (f in nologs):
                 label = r'$\log($'+label+r'$)$'
-            cbar.set_label(label)
+            cbar.set_label(label,va='bottom')
 #         cbar.ax.xaxis.tick_top()
-        cbar.ax.xaxis.set_label_position('top')
         if (f in whites):
             set_axis_color(cbar.ax,'xy','w')
             cbar.outline.set_edgecolor('w')
